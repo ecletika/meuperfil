@@ -14,7 +14,138 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cv_experiences: {
+        Row: {
+          company: string
+          created_at: string
+          description_en: string[]
+          description_es: string[]
+          description_pt: string[]
+          display_order: number
+          id: string
+          location: string
+          period: string
+          title_en: string
+          title_es: string
+          title_pt: string
+          updated_at: string
+        }
+        Insert: {
+          company: string
+          created_at?: string
+          description_en?: string[]
+          description_es?: string[]
+          description_pt?: string[]
+          display_order?: number
+          id?: string
+          location: string
+          period: string
+          title_en: string
+          title_es: string
+          title_pt: string
+          updated_at?: string
+        }
+        Update: {
+          company?: string
+          created_at?: string
+          description_en?: string[]
+          description_es?: string[]
+          description_pt?: string[]
+          display_order?: number
+          id?: string
+          location?: string
+          period?: string
+          title_en?: string
+          title_es?: string
+          title_pt?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      cv_languages: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          is_native: boolean
+          language_en: string
+          language_es: string
+          language_pt: string
+          level_en: string
+          level_es: string
+          level_pt: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_native?: boolean
+          language_en: string
+          language_es: string
+          language_pt: string
+          level_en: string
+          level_es: string
+          level_pt: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_native?: boolean
+          language_en?: string
+          language_es?: string
+          language_pt?: string
+          level_en?: string
+          level_es?: string
+          level_pt?: string
+        }
+        Relationships: []
+      }
+      cv_skills: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      cv_summary: {
+        Row: {
+          id: string
+          summary_en: string
+          summary_es: string
+          summary_pt: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          summary_en: string
+          summary_es: string
+          summary_pt: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          summary_en?: string
+          summary_es?: string
+          summary_pt?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

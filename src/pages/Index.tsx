@@ -1,12 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { LanguageSelector } from "@/components/cv/LanguageSelector";
 import { CVHeader } from "@/components/cv/CVHeader";
 import { CVEducation } from "@/components/cv/CVEducation";
-import { CVLanguages } from "@/components/cv/CVLanguages";
-import { CVExperience } from "@/components/cv/CVExperience";
-import { CVSkills } from "@/components/cv/CVSkills";
+import { CVSummary } from "@/components/cv/CVSummary";
+import { CVExperienceDB } from "@/components/cv/CVExperienceDB";
+import { CVSkillsDB } from "@/components/cv/CVSkillsDB";
+import { CVLanguagesDB } from "@/components/cv/CVLanguagesDB";
 import { DownloadButton } from "@/components/cv/DownloadButton";
 import { cvDataPT, cvDataEN, cvDataES, labels, CVData } from "@/data/cvData";
+import { Button } from "@/components/ui/button";
+import { Settings } from "lucide-react";
 
 type Language = "pt" | "en" | "es";
 
@@ -16,11 +20,27 @@ const cvDataMap: Record<Language, CVData> = {
   es: cvDataES,
 };
 
+const extendedLabels = {
+  pt: {
+    ...labels.pt,
+    summary: "Resumo Profissional",
+  },
+  en: {
+    ...labels.en,
+    summary: "Professional Summary",
+  },
+  es: {
+    ...labels.es,
+    summary: "Resumen Profesional",
+  },
+};
+
 const Index = () => {
   const [currentLang, setCurrentLang] = useState<Language>("pt");
+  const navigate = useNavigate();
   
   const cvData = cvDataMap[currentLang];
-  const currentLabels = labels[currentLang];
+  const currentLabels = extendedLabels[currentLang];
 
   return (
     <div className="min-h-screen bg-background">
@@ -31,11 +51,21 @@ const Index = () => {
             currentLang={currentLang} 
             onLanguageChange={setCurrentLang} 
           />
-          <DownloadButton 
-            label={currentLabels.downloadCV}
-            targetId="cv-content"
-            fileName={`CV_Mauricio_Silva_${currentLang.toUpperCase()}`}
-          />
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => navigate("/auth")}
+              title="Admin"
+            >
+              <Settings className="w-5 h-5" />
+            </Button>
+            <DownloadButton 
+              label={currentLabels.downloadCV}
+              targetId="cv-content"
+              fileName={`CV_Mauricio_Silva_${currentLang.toUpperCase()}`}
+            />
+          </div>
         </div>
       </nav>
 
@@ -46,14 +76,16 @@ const Index = () => {
       >
         <CVHeader data={cvData} labels={currentLabels} />
         
+        <CVSummary language={currentLang} labels={currentLabels} />
+        
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <CVEducation data={cvData} labels={currentLabels} />
-          <CVLanguages data={cvData} labels={currentLabels} />
+          <CVLanguagesDB language={currentLang} labels={currentLabels} />
         </div>
         
-        <CVExperience data={cvData} labels={currentLabels} />
+        <CVExperienceDB language={currentLang} labels={currentLabels} />
         
-        <CVSkills data={cvData} labels={currentLabels} />
+        <CVSkillsDB labels={currentLabels} />
       </main>
 
       {/* Footer */}
