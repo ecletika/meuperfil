@@ -27,7 +27,6 @@ export const DownloadButton = ({ label, targetId, fileName }: DownloadButtonProp
         backgroundColor: "#f8fafb",
       });
 
-      const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
@@ -40,7 +39,6 @@ export const DownloadButton = ({ label, targetId, fileName }: DownloadButtonProp
       const imgHeight = canvas.height;
       const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
       const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 0;
 
       // Calculate total pages needed
       const pageHeight = pdfHeight / ratio;
@@ -69,10 +67,11 @@ export const DownloadButton = ({ label, targetId, fileName }: DownloadButtonProp
             imgWidth, sourceHeight
           );
           
-          const pageImgData = pageCanvas.toDataURL("image/png");
+          // Use JPEG format to avoid PNG signature issues
+          const pageImgData = pageCanvas.toDataURL("image/jpeg", 0.95);
           pdf.addImage(
             pageImgData,
-            "PNG",
+            "JPEG",
             imgX,
             0,
             imgWidth * ratio,
