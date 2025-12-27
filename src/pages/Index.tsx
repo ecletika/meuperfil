@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LanguageSelector } from "@/components/cv/LanguageSelector";
-import { CVHeader } from "@/components/cv/CVHeader";
+import { CVHeaderDB } from "@/components/cv/CVHeaderDB";
 import { CVEducation } from "@/components/cv/CVEducation";
 import { CVSummary } from "@/components/cv/CVSummary";
 import { CVExperienceDB } from "@/components/cv/CVExperienceDB";
@@ -9,8 +9,10 @@ import { CVSkillsDB } from "@/components/cv/CVSkillsDB";
 import { CVLanguagesDB } from "@/components/cv/CVLanguagesDB";
 import { DownloadButton } from "@/components/cv/DownloadButton";
 import { cvDataPT, cvDataEN, cvDataES, labels, CVData } from "@/data/cvData";
+import { useCVContactInfo } from "@/hooks/useCVData";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
+import profilePhoto from "@/assets/mauricio-profile.jpg";
 
 type Language = "pt" | "en" | "es";
 
@@ -38,14 +40,24 @@ const extendedLabels = {
 const Index = () => {
   const [currentLang, setCurrentLang] = useState<Language>("pt");
   const navigate = useNavigate();
+  const { data: contactInfo } = useCVContactInfo();
   
   const cvData = cvDataMap[currentLang];
   const currentLabels = extendedLabels[currentLang];
 
+  // Use photo from contact info or default
+  const backgroundPhoto = contactInfo?.photo_url || profilePhoto;
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Background Photo - Site only (not in PDF) */}
+      <div 
+        className="fixed inset-0 z-0 opacity-5 bg-cover bg-center bg-no-repeat pointer-events-none print:hidden"
+        style={{ backgroundImage: `url(${backgroundPhoto})` }}
+      />
+      
       {/* Fixed Header with Language Selector and Download */}
-      <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border py-4">
+      <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border py-4">
         <div className="container max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <LanguageSelector 
             currentLang={currentLang} 
@@ -72,9 +84,9 @@ const Index = () => {
       {/* CV Content */}
       <main 
         id="cv-content"
-        className="container max-w-4xl mx-auto px-4 py-8 space-y-6"
+        className="container max-w-4xl mx-auto px-4 py-8 space-y-6 relative z-10 bg-background"
       >
-        <CVHeader data={cvData} labels={currentLabels} />
+        <CVHeaderDB language={currentLang} labels={currentLabels} />
         
         <CVSummary language={currentLang} labels={currentLabels} />
         
@@ -89,7 +101,7 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border py-6 mt-12">
+      <footer className="border-t border-border py-6 mt-12 relative z-10 bg-background">
         <div className="container max-w-4xl mx-auto px-4 text-center">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Mauricio da Silva Junior. 

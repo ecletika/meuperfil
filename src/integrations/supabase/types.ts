@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      cv_contact_info: {
+        Row: {
+          address: string
+          birth_date: string
+          email: string
+          email2: string | null
+          id: string
+          linkedin: string
+          name: string
+          nationality_en: string
+          nationality_es: string
+          nationality_pt: string
+          phone: string
+          phone2: string | null
+          photo_url: string | null
+          updated_at: string
+          whatsapp: string
+        }
+        Insert: {
+          address?: string
+          birth_date?: string
+          email?: string
+          email2?: string | null
+          id?: string
+          linkedin?: string
+          name?: string
+          nationality_en?: string
+          nationality_es?: string
+          nationality_pt?: string
+          phone?: string
+          phone2?: string | null
+          photo_url?: string | null
+          updated_at?: string
+          whatsapp?: string
+        }
+        Update: {
+          address?: string
+          birth_date?: string
+          email?: string
+          email2?: string | null
+          id?: string
+          linkedin?: string
+          name?: string
+          nationality_en?: string
+          nationality_es?: string
+          nationality_pt?: string
+          phone?: string
+          phone2?: string | null
+          photo_url?: string | null
+          updated_at?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       cv_experiences: {
         Row: {
           company: string
