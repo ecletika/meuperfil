@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { useCVExperiences, useCVSkills, useCVLanguages, useCVSummary } from "@/hooks/useCVData";
+import { useCVExperiences, useCVSkills, useCVLanguages, useCVSummary, useCVContactInfo } from "@/hooks/useCVData";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,9 @@ import {
   Code,
   Languages,
   User,
-  Loader2
+  Loader2,
+  Contact,
+  Camera
 } from "lucide-react";
 import {
   Dialog,
@@ -41,6 +43,7 @@ const Admin = () => {
   const { data: skills, isLoading: skillsLoading } = useCVSkills();
   const { data: languages, isLoading: langLoading } = useCVLanguages();
   const { data: summary, isLoading: summaryLoading } = useCVSummary();
+  const { data: contactInfo, isLoading: contactLoading } = useCVContactInfo();
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -78,6 +81,23 @@ const Admin = () => {
     summary_es: "",
   });
 
+  // Contact form state
+  const [editContact, setEditContact] = useState({
+    name: "",
+    birth_date: "",
+    nationality_pt: "",
+    nationality_en: "",
+    nationality_es: "",
+    phone: "",
+    phone2: "",
+    email: "",
+    email2: "",
+    whatsapp: "",
+    linkedin: "",
+    address: "",
+    photo_url: "",
+  });
+
   useEffect(() => {
     if (!loading && !user) {
       navigate("/auth");
@@ -93,6 +113,26 @@ const Admin = () => {
       });
     }
   }, [summary]);
+
+  useEffect(() => {
+    if (contactInfo) {
+      setEditContact({
+        name: contactInfo.name,
+        birth_date: contactInfo.birth_date,
+        nationality_pt: contactInfo.nationality_pt,
+        nationality_en: contactInfo.nationality_en,
+        nationality_es: contactInfo.nationality_es,
+        phone: contactInfo.phone,
+        phone2: contactInfo.phone2 || "",
+        email: contactInfo.email,
+        email2: contactInfo.email2 || "",
+        whatsapp: contactInfo.whatsapp,
+        linkedin: contactInfo.linkedin,
+        address: contactInfo.address,
+        photo_url: contactInfo.photo_url || "",
+      });
+    }
+  }, [contactInfo]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -298,6 +338,36 @@ const Admin = () => {
     }
   };
 
+  const handleUpdateContact = async () => {
+    if (!contactInfo) return;
+
+    setIsSaving(true);
+    const { error } = await supabase
+      .from("cv_contact_info")
+      .update({
+        ...editContact,
+        phone2: editContact.phone2 || null,
+        email2: editContact.email2 || null,
+        photo_url: editContact.photo_url || null,
+      })
+      .eq("id", contactInfo.id);
+    setIsSaving(false);
+
+    if (error) {
+      toast({
+        title: "Erro",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Sucesso",
+        description: "Informações de contato atualizadas",
+      });
+      queryClient.invalidateQueries({ queryKey: ["cv-contact-info"] });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -325,8 +395,12 @@ const Admin = () => {
       </nav>
 
       <main className="container max-w-4xl mx-auto px-4 py-8">
-        <Tabs defaultValue="summary" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+        <Tabs defaultValue="contact" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="contact" className="gap-2">
+              <Contact className="w-4 h-4" />
+              <span className="hidden sm:inline">Contato</span>
+            </TabsTrigger>
             <TabsTrigger value="summary" className="gap-2">
               <User className="w-4 h-4" />
               <span className="hidden sm:inline">Resumo</span>
@@ -345,9 +419,169 @@ const Admin = () => {
             </TabsTrigger>
           </TabsList>
 
+          {/* Contact Tab */}
+          <TabsContent value="contact" className="space-y-4">
+            <div className="cv-card p-6">
+              <h2 className="text-lg font-semibold mb-4">Informações de Contato</h2>
+              
+              {contactLoading ? (
+                <div className="h-96 bg-muted/50 animate-pulse rounded-lg" />
+              ) : (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Nome</Label>
+                      <Input
+                        value={editContact.name}
+                        onChange={(e) =>
+                          setEditContact({ ...editContact, name: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label>Data de Nascimento</Label>
+                      <Input
+                        value={editContact.birth_date}
+                        onChange={(e) =>
+                          setEditContact({ ...editContact, birth_date: e.target.value })
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <Label>Nacionalidade (PT)</Label>
+                      <Input
+                        value={editContact.nationality_pt}
+                        onChange={(e) =>
+                          setEditContact({ ...editContact, nationality_pt: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label>Nacionalidade (EN)</Label>
+                      <Input
+                        value={editContact.nationality_en}
+                        onChange={(e) =>
+                          setEditContact({ ...editContact, nationality_en: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label>Nacionalidade (ES)</Label>
+                      <Input
+                        value={editContact.nationality_es}
+                        onChange={(e) =>
+                          setEditContact({ ...editContact, nationality_es: e.target.value })
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Telefone Principal</Label>
+                      <Input
+                        value={editContact.phone}
+                        onChange={(e) =>
+                          setEditContact({ ...editContact, phone: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label>Telefone Secundário</Label>
+                      <Input
+                        value={editContact.phone2}
+                        onChange={(e) =>
+                          setEditContact({ ...editContact, phone2: e.target.value })
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Email Principal</Label>
+                      <Input
+                        value={editContact.email}
+                        onChange={(e) =>
+                          setEditContact({ ...editContact, email: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label>Email Secundário</Label>
+                      <Input
+                        value={editContact.email2}
+                        onChange={(e) =>
+                          setEditContact({ ...editContact, email2: e.target.value })
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>WhatsApp</Label>
+                      <Input
+                        value={editContact.whatsapp}
+                        onChange={(e) =>
+                          setEditContact({ ...editContact, whatsapp: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label>LinkedIn URL</Label>
+                      <Input
+                        value={editContact.linkedin}
+                        onChange={(e) =>
+                          setEditContact({ ...editContact, linkedin: e.target.value })
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label>Morada</Label>
+                    <Input
+                      value={editContact.address}
+                      onChange={(e) =>
+                        setEditContact({ ...editContact, address: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <Label>URL da Foto (opcional)</Label>
+                    <Input
+                      value={editContact.photo_url}
+                      onChange={(e) =>
+                        setEditContact({ ...editContact, photo_url: e.target.value })
+                      }
+                      placeholder="https://exemplo.com/minha-foto.jpg"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Deixe em branco para usar a foto padrão
+                    </p>
+                  </div>
+
+                  <Button onClick={handleUpdateContact} disabled={isSaving}>
+                    {isSaving ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Save className="w-4 h-4 mr-2" />
+                    )}
+                    Salvar Contato
+                  </Button>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
           {/* Summary Tab */}
           <TabsContent value="summary" className="space-y-4">
-            <div className="cv-card">
+            <div className="cv-card p-6">
               <h2 className="text-lg font-semibold mb-4">Resumo Profissional</h2>
               
               {summaryLoading ? (
@@ -399,7 +633,7 @@ const Admin = () => {
 
           {/* Experiences Tab */}
           <TabsContent value="experiences" className="space-y-4">
-            <div className="cv-card">
+            <div className="cv-card p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Experiências Profissionais</h2>
                 <Dialog>
@@ -551,7 +785,7 @@ const Admin = () => {
 
           {/* Skills Tab */}
           <TabsContent value="skills" className="space-y-4">
-            <div className="cv-card">
+            <div className="cv-card p-6">
               <h2 className="text-lg font-semibold mb-4">Competências Técnicas</h2>
               
               <div className="flex gap-2 mb-4">
@@ -595,7 +829,7 @@ const Admin = () => {
 
           {/* Languages Tab */}
           <TabsContent value="languages" className="space-y-4">
-            <div className="cv-card">
+            <div className="cv-card p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Competências Linguísticas</h2>
                 <Dialog>

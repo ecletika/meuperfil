@@ -21,10 +21,10 @@ export const DownloadButton = ({ label, targetId, fileName }: DownloadButtonProp
       if (!element) return;
 
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale: 3,
         useCORS: true,
         logging: false,
-        backgroundColor: "#f8fafb",
+        backgroundColor: "#ffffff",
       });
 
       const pdf = new jsPDF({
@@ -68,7 +68,7 @@ export const DownloadButton = ({ label, targetId, fileName }: DownloadButtonProp
           );
           
           // Use JPEG format to avoid PNG signature issues
-          const pageImgData = pageCanvas.toDataURL("image/jpeg", 0.95);
+          const pageImgData = pageCanvas.toDataURL("image/jpeg", 1.0);
           pdf.addImage(
             pageImgData,
             "JPEG",

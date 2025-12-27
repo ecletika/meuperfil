@@ -40,6 +40,23 @@ export interface CVSummary {
   summary_es: string;
 }
 
+export interface CVContactInfo {
+  id: string;
+  name: string;
+  birth_date: string;
+  nationality_pt: string;
+  nationality_en: string;
+  nationality_es: string;
+  phone: string;
+  phone2: string | null;
+  email: string;
+  email2: string | null;
+  whatsapp: string;
+  linkedin: string;
+  address: string;
+  photo_url: string | null;
+}
+
 export const useCVExperiences = () => {
   return useQuery({
     queryKey: ["cv-experiences"],
@@ -96,6 +113,21 @@ export const useCVSummary = () => {
       
       if (error) throw error;
       return data as CVSummary | null;
+    },
+  });
+};
+
+export const useCVContactInfo = () => {
+  return useQuery({
+    queryKey: ["cv-contact-info"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("cv_contact_info")
+        .select("*")
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data as CVContactInfo | null;
     },
   });
 };

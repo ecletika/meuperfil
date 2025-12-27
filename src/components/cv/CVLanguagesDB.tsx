@@ -55,35 +55,37 @@ export const CVLanguagesDB = ({ language, labels }: CVLanguagesDBProps) => {
   };
 
   return (
-    <section className="cv-card animate-fade-in h-fit">
-      <h2 className="section-title">
-        <Languages className="w-5 h-5" />
+    <section className="cv-card animate-fade-in h-fit p-6">
+      <h2 className="section-title flex items-center gap-2 text-lg font-semibold text-foreground mb-4">
+        <Languages className="w-5 h-5 text-primary" />
         {labels.languages}
       </h2>
       <div className="space-y-4">
         {nativeLanguage && (
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">
+          <div className="p-3 rounded-lg bg-secondary/50 border-l-4 border-primary">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
               {labels.nativeLanguage}
             </p>
-            <p className="font-semibold text-foreground">
+            <p className="font-semibold text-foreground text-lg">
               {getLanguageName(nativeLanguage)}
             </p>
           </div>
         )}
         {otherLanguages.length > 0 && (
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               {labels.otherLanguages}
             </p>
-            {otherLanguages.map((lang) => (
-              <div key={lang.id} className="flex justify-between items-center">
-                <span className="text-foreground">{getLanguageName(lang)}</span>
-                <span className="text-sm text-muted-foreground">
-                  {getLevel(lang)}
-                </span>
-              </div>
-            ))}
+            <div className="space-y-2">
+              {otherLanguages.map((lang) => (
+                <div key={lang.id} className="flex justify-between items-center p-3 rounded-lg bg-secondary/30">
+                  <span className="font-medium text-foreground">{getLanguageName(lang)}</span>
+                  <span className="text-sm px-3 py-1 rounded-full bg-primary/10 text-primary font-medium">
+                    {getLevel(lang)}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

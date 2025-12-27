@@ -51,8 +51,8 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         cv: {
-          teal: "hsl(var(--cv-teal))",
-          "teal-light": "hsl(var(--cv-teal-light))",
+          primary: "hsl(var(--cv-primary))",
+          "primary-light": "hsl(var(--cv-primary-light))",
           section: "hsl(var(--cv-section-bg))",
         },
         sidebar: {
